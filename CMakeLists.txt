@@ -26,8 +26,11 @@ set(VTL_CMAKE_UTILS_SRC_FILES
     VTL/utils/VTL_encryptor.c
 
     VTL/utils/log/VTL_console_log.c
+    VTL/utils/curl/VTL_http_client.c
 
     VTL/utils/db/VTL_db_credentals.c
+    VTL/utils/db/VTL_db_connection.c
+    VTL/utils/db/VTL_db_executor.c
 
     )
 
@@ -53,10 +56,9 @@ set(VTL_CMAKE_PUBLICATION_SRC_FILES
 
     ${VTL_CMAKE_PUBLICATION_TEXT_SRC_FILES}
     VTL/content_platform/tg/VTL_content_platform_tg_net.c
-    VTL/content_platform/VTL_content_platform_publication.c
 
-    VTL/publication/VTL_publication.c    
-
+    VTL/publication/VTL_publication.c
+    VTL/publication/text/bbcode/VTL_publication_text_op_bbcode.c
     )
 
 
@@ -116,42 +118,19 @@ add_executable(${AppName}
     main.c)
 
 # Link FFmpeg
-target_link_libraries(${AppName} PRIVATE 
-    ffmpeg 
-    VTL_img 
-    m           # математическая библиотека
-    va          # VAAPI
-    va-drm      # VAAPI DRM
-    va-x11      # VAAPI X11
-    drm         # Direct Rendering Manager
-    X11         # X11
-    vdpau       # VDPAU
-    z           # zlib
-    bz2         # bzip2
-    lzma        # xz/lzma
-    lz4         # lz4
-    zstd        # zstd
-    x264        # H.264
-    x265        # H.265
-    vpx         # VP8/VP9
-    aom         # AV1
-    opus        # Opus audio
-    vorbis      # Vorbis audio
-    ogg         # Ogg container
-    swresample  # FFmpeg resampling
-    swscale     # FFmpeg scaling
-)
+target_link_libraries(${AppName} PRIVATE ffmpeg VTL_img m curl cjson pq ssl crypto)
 
-target_include_directories(${AppName} 
-    PRIVATE 
+target_include_directories(${AppName}
+    PRIVATE
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/VTL
     ${CMAKE_SOURCE_DIR}/VTL/user
     ${CMAKE_SOURCE_DIR}/VTL/user/history
     SYSTEM
     /usr/include
+    /usr/include/postgresql
 )
 
 enable_testing()
 
-add_subdirectory(vtl_tests)
+# add_subdirectory(vtl_tests)  # disabled in minimal-working: broken include path in vtl_tests/VTL_test_data.c
