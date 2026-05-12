@@ -39,14 +39,23 @@ cmake --build build
 
 ### Windows (нативно, без WSL/MSYS2)
 
-Сначала поставить **CMake** и **MinGW-w64** (через `winget`, он есть в Windows 10/11):
+Понадобится **CMake** и **MinGW-w64** (GCC под Windows).
+
+**1. CMake.** Скачай инсталлятор с https://cmake.org/download/ → `Windows x64 Installer`. При установке отметь ✅ **"Add CMake to the system PATH"**.
+
+**2. MinGW-w64.** Скачай с https://github.com/brechtsanders/winlibs_mingw/releases/latest архив вида `winlibs-x86_64-posix-seh-gcc-*-mingw-w64ucrt-*-rN.zip`. Распакуй в `C:\` → получится `C:\mingw64\`. Добавь `C:\mingw64\bin` в `Path`:
+
+- Пуск → "Изменение системных переменных среды" → **Переменные среды**
+- В разделе **Пользователь** найти `Path` → **Изменить** → **Создать** → `C:\mingw64\bin` → OK везде
+
+**3. Закрой PowerShell и открой заново** (иначе `gcc` не найдётся в PATH). Проверь:
 
 ```powershell
-winget install -e --id Kitware.CMake
-winget install -e --id BrechtSanders.WinLibs.POSIX.UCRT.MSVCRT
+cmake --version
+gcc --version
 ```
 
-**Закрыть и заново открыть PowerShell** (иначе `gcc` не найдётся в PATH). Затем:
+**4. Собирай:**
 
 ```powershell
 git clone <url>
@@ -55,8 +64,6 @@ cmake -S . -B build -G "MinGW Makefiles"
 cmake --build build
 .\app\VTL.exe
 ```
-
-> Если `winget` не работает: качай CMake вручную с https://cmake.org/download/ (отметь "Add to PATH" при установке), MinGW-w64 — с https://winlibs.com/ (`Win64 / POSIX threads / UCRT runtime`), распакуй в `C:\mingw64\` и добавь `C:\mingw64\bin` в `Path`.
 
 Под MSVC проект **не собирается** — pthread не поддерживается. Только MinGW.
 
