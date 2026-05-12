@@ -21,16 +21,83 @@ git clone <url-репозитория>
 cd vtl
 ```
 
-### 2. Вариант A: Сборка из терминала (Linux / WSL Ubuntu)
+### 2. Установка зависимостей
 
-На чистой Ubuntu сначала поставьте toolchain:
+Выберите свою платформу.
+
+#### Linux / WSL Ubuntu
 
 ```bash
 sudo apt update
-sudo apt install build-essential cmake pkg-config
+sudo apt install build-essential cmake pkg-config \
+    libavcodec-dev libavformat-dev libavutil-dev libavfilter-dev \
+    libswscale-dev libswresample-dev \
+    libcurl4-openssl-dev libssl-dev libpq-dev
 ```
 
-Затем собираем:
+> Нет WSL под Windows? Поставьте: `wsl --install -d Ubuntu` (PowerShell от админа). Перезагрузка → задайте логин/пароль → повторите команды выше внутри Ubuntu.
+
+#### macOS
+
+```bash
+# Если нет Homebrew:
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install cmake pkg-config ffmpeg curl openssl@3 postgresql@16
+```
+
+Если CMake не найдёт `openssl` или `libpq` (они keg-only) — экспортируйте `PKG_CONFIG_PATH`:
+
+```bash
+export PKG_CONFIG_PATH="$(brew --prefix openssl@3)/lib/pkgconfig:$(brew --prefix postgresql@16)/lib/pkgconfig:$PKG_CONFIG_PATH"
+```
+
+#### Windows (нативно, без WSL)
+
+Нужен **MSYS2** (https://www.msys2.org/) — он даёт MinGW-w64 toolchain. Установите его, запустите **MSYS2 MinGW64** shell.
+
+Дальше два варианта установки библиотек.
+
+**Вариант 1 — pacman (рекомендуется).** Одна команда, готовые бинарники, ~1 минута.
+
+```bash
+pacman -Syu
+pacman -S --needed \
+    mingw-w64-x86_64-gcc \
+    mingw-w64-x86_64-cmake \
+    mingw-w64-x86_64-pkgconf \
+    mingw-w64-x86_64-ffmpeg \
+    mingw-w64-x86_64-curl \
+    mingw-w64-x86_64-openssl \
+    mingw-w64-x86_64-postgresql
+```
+
+<details>
+<summary><b>Вариант 2 — vcpkg</b> (если нужны фиксированные версии библиотек или manifest mode для команды/CI)</summary>
+
+vcpkg фиксирует версии через `vcpkg.json` + baseline → воспроизводимая сборка у всех. Минусы: первая установка ~30-60 мин (компилирует из исходников), ~5-10 GB на диске.
+
+В MSYS2 MinGW64 — только toolchain:
+```bash
+pacman -Syu
+pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-pkgconf
+```
+
+В PowerShell — vcpkg + библиотеки:
+```powershell
+git clone https://github.com/microsoft/vcpkg C:\vcpkg
+C:\vcpkg\bootstrap-vcpkg.bat
+C:\vcpkg\vcpkg.exe install ffmpeg:x64-mingw-dynamic curl:x64-mingw-dynamic openssl:x64-mingw-dynamic libpq:x64-mingw-dynamic
+```
+</details>
+
+> ⚠️ Под MSVC проект **не собирается** — зависит от `pthread` (`if(UNIX OR MINGW)` в CMake). Используйте MinGW.
+
+### 3. Сборка
+
+#### Linux / WSL / macOS
+
+Из корня проекта:
 
 ```bash
 mkdir build && cd build
@@ -39,52 +106,68 @@ cmake --build .
 cd ..
 ```
 
-Исполняемый файл появится в `app/VTL` (в **корне проекта**, не в `build/app/` — поэтому перед запуском `cd ..`).
+Бинарь — `app/VTL` (в **корне проекта**, не в `build/app/` — поэтому `cd ..`).
 
-### 3. Вариант B: Сборка из CLion (Windows + WSL)
+#### Windows (MSYS2 MinGW64 shell)
 
-#### Первоначальная настройка (один раз)
+**Если ставили через pacman:**
+```bash
+cd /c/path/to/vtl
+mkdir build && cd build
+cmake .. -G "MinGW Makefiles"
+cmake --build .
+cd ..
+```
 
-1. Установите WSL Ubuntu, если не установлен:
-   ```powershell
-   wsl --install -d Ubuntu
-   ```
+**Если ставили через vcpkg:**
+```bash
+cd /c/path/to/vtl
+mkdir build && cd build
+cmake .. -G "MinGW Makefiles" \
+    -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic
+cmake --build .
+cd ..
+```
 
-2. В CLion откройте проект (`File -> Open` -> папка `vtl`)
+Бинарь — `app/VTL.exe`. Если при запуске ругается на отсутствие DLL — добавьте в `PATH`:
 
-3. Настройте WSL-тулчейн:
-   - `Settings -> Build, Execution, Deployment -> Toolchains`
-   - Нажмите `+`, выберите **WSL**
-   - Выберите дистрибутив **Ubuntu**
-   - Дождитесь пока CLion обнаружит CMake, gcc, g++
-   - Перетащите WSL-тулчейн **вверх списка** (чтобы стал дефолтным)
+```powershell
+# pacman:
+$env:PATH = "C:\msys64\mingw64\bin;$env:PATH"
+# vcpkg:
+$env:PATH = "C:\vcpkg\installed\x64-mingw-dynamic\bin;$env:PATH"
+```
 
-4. Убедитесь что CMake использует WSL:
-   - `Settings -> Build, Execution, Deployment -> CMake`
-   - Поле **Toolchain** должно быть **WSL** (или WSL Ubuntu)
+### 4. Сборка из CLion (опционально — для Windows-разработчиков через WSL)
 
-5. Настройте конфигурацию запуска:
-   - `Run -> Edit Configurations...`
-   - Выберите таргет **VTL**
-   - **Working directory**: `$ProjectFileDir$` (обязательно! иначе не найдёт файлы)
+Если работаете в CLion на Windows и не хотите возиться с MinGW — собирайте через WSL-тулчейн.
+
+1. Установите WSL Ubuntu и Linux-зависимости (см. § 2 → Linux / WSL Ubuntu)
+
+2. В CLion: `File -> Open` → папка проекта
+
+3. `Settings -> Build, Execution, Deployment -> Toolchains` → `+` → **WSL** → выберите **Ubuntu** → перетащите вверх
+
+4. `Settings -> Build, Execution, Deployment -> CMake` → **Toolchain** = WSL
+
+5. `Run -> Edit Configurations...` → таргет **VTL**:
+   - **Working directory**: `$ProjectFileDir$` (обязательно — иначе не найдёт `text.md`)
    - **Environment variables**: `TG_BOT_TOKEN=<токен>;TG_CHAT_ID=<chat_id>`
 
-6. Нажмите **File -> Reload CMake Project** (или кнопку Reload в панели CMake внизу)
+6. `File -> Reload CMake Project`
 
-#### Сборка и запуск
+7. **Build** `Ctrl+F9`, **Run** `Shift+F10`
 
-- **Build**: `Ctrl+F9` или кнопка Build (молоток)
-- **Run**: `Shift+F10` или кнопка Run (зелёный треугольник)
+**Если что-то пошло не так:**
 
-#### Если что-то пошло не так
-
-- Ошибка `No such file or directory` при сборке — **File -> Reload CMake Project**
-- Segfault (exit code 139) — проверьте что Working directory = `$ProjectFileDir$`
-- Программа зависает — проверьте что в WSL доступен `api.telegram.org`:
+- `No such file or directory` при сборке — `File -> Reload CMake Project`
+- Segfault (exit 139) — проверьте Working directory = `$ProjectFileDir$`
+- Зависает при отправке в Telegram — проверьте доступ из WSL:
   ```bash
   wsl curl -s https://api.telegram.org
   ```
-  Если нет — добавьте в WSL файл `/etc/hosts`:
+  Нет? Добавьте в WSL `/etc/hosts`:
   ```
   149.154.167.220 api.telegram.org
   ```
@@ -93,9 +176,9 @@ cd ..
   [wsl2]
   networkingMode=mirrored
   ```
-  После чего перезапустите WSL: `wsl --shutdown` и откройте заново.
+  Перезапустите: `wsl --shutdown`.
 
-### 4. Запуск
+### 5. Запуск
 
 #### Что должно лежать в корне проекта
 
