@@ -15,18 +15,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/app)
 # Режимы сборки
 # ============================================================
 # По умолчанию (VTL_MINIMAL_BUILD=OFF) собирается полный проект:
-#   AsciiDoc парсер + Telegram + Reddit + аудио/видео через FFmpeg + PostgreSQL.
+#   Telegram + Reddit + аудио/видео через FFmpeg + PostgreSQL.
 #   Требует FFmpeg-runtime-deps (libvpx, libopus, libdav1d и т.п.) — есть на
 #   обычной desktop-Linux с медиаподдержкой, нет на голом server-Ubuntu.
 #
-# VTL_MINIMAL_BUILD=ON собирает только AsciiDoc парсер (дипломная фича) — без
-# FFmpeg/curl/openssl/postgres. Работает на абсолютно чистой Linux без
-# единой установленной библиотеки кроме toolchain (build-essential + cmake).
-option(VTL_MINIMAL_BUILD "Сборка только AsciiDoc-парсера, без внешних зависимостей" OFF)
+# VTL_MINIMAL_BUILD=ON — упрощённая сборка без FFmpeg/curl/openssl/postgres.
+# Работает на абсолютно чистой Linux без единой установленной библиотеки
+# кроме toolchain (build-essential + cmake).
+option(VTL_MINIMAL_BUILD "Упрощённая сборка без внешних зависимостей" OFF)
 
 
 if(VTL_MINIMAL_BUILD)
-    message(STATUS "VTL: MINIMAL build (только AsciiDoc парсер)")
+    message(STATUS "VTL: minimal build")
     message(STATUS "VTL: target system = ${CMAKE_SYSTEM_NAME}")
 
     add_subdirectory(VTL/publication/text/asciidoc)

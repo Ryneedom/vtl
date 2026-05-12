@@ -1,4 +1,4 @@
-# Самодостаточная мини-библиотека: только AsciiDoc-парсер.
+# Самодостаточная под-библиотека модуля publication.
 # Не зависит ни от utils, ни от curl/openssl/postgres/ffmpeg.
 # Используется при VTL_MINIMAL_BUILD=ON для сборки на чистой ОС.
 # Работает на Linux, macOS, Windows (MinGW). MSVC не поддерживается — pthread'а нет.

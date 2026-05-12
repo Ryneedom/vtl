@@ -5,7 +5,6 @@
 ## Возможности
 
 - **Текстовый пайплайн** — генерация текстовых файлов в форматах Telegram MarkdownV2, HTML, BBCode; отправка в Telegram
-- **AsciiDoc парсер** — параллельный (pthread) разбор 15 типов разметки в `MarkedText` с двумя уровнями параллелизма (по сканерам и по файлам)
 - **Аудио пайплайн** — чтение, перекодирование (FFmpeg) и отправка аудиофайлов с подписью в Telegram
 - **Видео** — структура для видеоконтейнеров и субтитров (SRT парсинг, наложение, конвертация, стилизация)
 - **Изображения** — обработка через FFmpeg (фильтры, утилиты)
@@ -33,31 +32,17 @@ cd vtl
 | Fedora / RHEL | `sudo dnf install gcc make cmake` |
 | Arch | `sudo pacman -S base-devel cmake` |
 
-#### Вариант A — минимальная сборка (рекомендуется для проверки)
-
-Собирает **только AsciiDoc-парсер** (дипломная фича). Не использует FFmpeg / curl / openssl / postgres вообще — гарантированно работает на любой чистой Linux x86_64.
-
-```bash
-cmake -S . -B build -DVTL_MINIMAL_BUILD=ON
-cmake --build build
-./app/VTL
-```
-
-На выходе — demo AsciiDoc парсера и бенчмарк параллелизма.
-
-#### Вариант B — полная сборка
-
-Дополнительно собирает Telegram / Reddit / FFmpeg-аудио / PostgreSQL-историю. Все библиотеки берутся из `external_libs/` через `IMPORTED`-таргеты + `RUNPATH`.
+#### Команда
 
 ```bash
 cmake -S . -B build
 cmake --build build
-./run.sh   # ставит LD_LIBRARY_PATH для транзитивных FFmpeg-deps
+./run.sh
 ```
 
-⚠️ Полная сборка работает **только на Linux-системе с медиаподдержкой** (Ubuntu Desktop / любая dev-машина с уже установленным мультимедиа-стеком). FFmpeg-shared-libs из `external_libs/` тянут транзитивно `libvpx`, `libdav1d`, `libopus`, `libmp3lame` и ещё ~50 опциональных кодеков, которых на голом server-Ubuntu может не быть.
+Все библиотеки берутся из `external_libs/` через `IMPORTED`-таргеты + `RUNPATH`. `run.sh` дополнительно ставит `LD_LIBRARY_PATH` — нужно для транзитивных FFmpeg-deps на Linux.
 
-На совсем голой системе либо используйте `-DVTL_MINIMAL_BUILD=ON`, либо доставьте через `apt install ffmpeg` (это подтянет нужные deps, но без библиотек проекта — только runtime-окружение FFmpeg).
+⚠️ FFmpeg-shared-libs из `external_libs/` тянут транзитивно `libvpx`, `libdav1d`, `libopus`, `libmp3lame` и ещё ~50 опциональных кодеков. На обычной Ubuntu Desktop / любой dev-машине с мультимедиа-стеком они уже стоят. На голом server-Ubuntu без них программа упадёт на runtime — доставьте `apt install ffmpeg` (это подтянет deps, но не сами библиотеки проекта — те остаются из репо).
 
 #### Поддерживаемые платформы
 
@@ -86,8 +71,6 @@ cmake -S . -B build && cmake --build build
 cmake -S . -B build && cmake --build build
 .\app\VTL.exe
 ```
-
-Если нужна **только дипломная фича** (AsciiDoc парсер без FFmpeg/curl/postgres) — добавьте `-DVTL_MINIMAL_BUILD=ON`. Этот режим работает даже без `external_libs/` целиком.
 
 ### 3. Сборка из CLion (опционально — для Windows через WSL)
 
@@ -168,10 +151,8 @@ curl https://api.telegram.org/bot<TOKEN>/getUpdates
 
 #### Что делает программа
 
-1. **AsciiDoc демо** — парсит in-memory пример и печатает разбор по частям с флагами BOLD/ITALIC/STRIKE
-2. **Бенчмарк параллелизма** — Sequential vs Parallel для 15 сканеров (512 KB документ) и для batch'а (8 файлов × 128 KB), считает Speedup и Efficiency
-3. **Text Pipeline** — читает `text.md`, генерирует `.t_md` / `.html`, отправляет в Telegram
-4. **Audio Pipeline** — отправляет один из аудиофайлов в Telegram с подписью из `text.md`
+1. **Text Pipeline** — читает `text.md`, генерирует `.t_md` / `.html`, отправляет в Telegram
+2. **Audio Pipeline** — отправляет один из аудиофайлов в Telegram с подписью из `text.md`
 
 ## Структура проекта
 
