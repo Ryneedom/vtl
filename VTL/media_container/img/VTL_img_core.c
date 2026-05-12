@@ -1,4 +1,4 @@
-#include "VTL_img_core.h"
+#include <VTL/media_container/img/VTL_img_core.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -181,7 +181,7 @@ int VTL_img_SaveImage(const char* output_path, VTL_ImageContext* ctx)
     }
 
     // Создаем контекст для конвертации
-    SwsContext *sws_ctx = sws_getContext(
+    struct SwsContext *sws_ctx = sws_getContext(
         ctx->current_frame->width, ctx->current_frame->height, ctx->current_frame->format,
         rgb_frame->width, rgb_frame->height, rgb_frame->format,
         SWS_BILINEAR, NULL, NULL, NULL
