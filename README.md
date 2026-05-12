@@ -12,29 +12,53 @@
 
 ## Сборка
 
-Все библиотеки (FFmpeg, libcurl, OpenSSL, libpq) лежат прямо в `external_libs/`. Нужен только компилятор C11 и CMake — никаких `apt install ffmpeg` / `brew install` / `vcpkg`.
+Все библиотеки (FFmpeg, libcurl, OpenSSL, libpq) лежат прямо в `external_libs/`. **Нужен только компилятор и CMake** — никаких `apt install ffmpeg` / `brew install ffmpeg` / `vcpkg`.
+
+### Linux (Ubuntu / Debian / WSL)
 
 ```bash
-git clone <url>
-cd vtl
+sudo apt install build-essential cmake
+git clone <url> && cd vtl
 cmake -S . -B build
 cmake --build build
-./app/VTL              # на Windows: .\app\VTL.exe
+./app/VTL
 ```
 
-### Toolchain (если ещё не стоит)
+Для Fedora — `sudo dnf install gcc make cmake`. Для Arch — `sudo pacman -S base-devel cmake`.
 
-| ОС | Команда |
-|---|---|
-| Ubuntu / Debian | `sudo apt install build-essential cmake` |
-| Fedora | `sudo dnf install gcc make cmake` |
-| Arch | `sudo pacman -S base-devel cmake` |
-| macOS | `xcode-select --install` (даёт clang + cmake) |
-| Windows | MinGW-w64 c [winlibs.com](https://winlibs.com/) + [cmake.org](https://cmake.org/download/) |
+### macOS (Apple Silicon, Sonoma+)
 
-### Поддерживаемые платформы
+```bash
+xcode-select --install
+brew install cmake
+git clone <url> && cd vtl
+cmake -S . -B build
+cmake --build build
+./app/VTL
+```
 
-Linux x86_64 · macOS arm64 (Apple Silicon, Sonoma+) · Windows x86_64 (MinGW). MSVC не поддерживается.
+### Windows (нативно, без WSL/MSYS2)
+
+Сначала поставить **CMake** и **MinGW-w64** (через `winget`, он есть в Windows 10/11):
+
+```powershell
+winget install -e --id Kitware.CMake
+winget install -e --id BrechtSanders.WinLibs.POSIX.UCRT.MSVCRT
+```
+
+**Закрыть и заново открыть PowerShell** (иначе `gcc` не найдётся в PATH). Затем:
+
+```powershell
+git clone <url>
+cd vtl
+cmake -S . -B build -G "MinGW Makefiles"
+cmake --build build
+.\app\VTL.exe
+```
+
+> Если `winget` не работает: качай CMake вручную с https://cmake.org/download/ (отметь "Add to PATH" при установке), MinGW-w64 — с https://winlibs.com/ (`Win64 / POSIX threads / UCRT runtime`), распакуй в `C:\mingw64\` и добавь `C:\mingw64\bin` в `Path`.
+
+Под MSVC проект **не собирается** — pthread не поддерживается. Только MinGW.
 
 ## Запуск
 
