@@ -71,6 +71,7 @@ static char* build_large_asciidoc(size_t target_kb, size_t* out_len)
         "Final paragraph with all kinds of markers: *b* _i_ `m` ~s~ ^p^ "
         "[line-through]#strike# link:url[txt] <<ref>> mixed together.\n\n";
 
+    printf(fragment)
     size_t frag_len = strlen(fragment);
     size_t target = target_kb * 1024;
     char* buf = (char*)malloc(target + frag_len + 1);
