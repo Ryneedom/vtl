@@ -100,21 +100,21 @@ static void demo_asciidoc_parser(void)
     VTL_publication_MarkedText* marked = NULL;
     VTL_AppResult res = VTL_asciidoc_ParseTextParallel(&src, &marked);
     if (res != VTL_res_kOk || !marked) {
-        printf("AsciiDoc demo parse failed: %d\n", (int)res);
+        printf("AsciiDoc демо: ошибка парсинга: %d\n", (int)res);
         return;
     }
 
-    printf("=== AsciiDoc Parser Demo (in-memory) ===\n");
-    printf("Source bytes: %zu, parsed into %zu parts\n",
+    printf("=== Демо AsciiDoc-парсера (в памяти) ===\n");
+    printf("Байт исходника: %zu, разобрано на %zu частей\n",
            src.length, marked->length);
     for (size_t i = 0; i < marked->length; ++i) {
         const VTL_publication_marked_text_Part* p = &marked->parts[i];
-        const char* label = "regular";
-        if (p->type & VTL_TEXT_MODIFICATION_BOLD)          label = "BOLD";
-        else if (p->type & VTL_TEXT_MODIFICATION_ITALIC)   label = "ITALIC";
-        else if (p->type & VTL_TEXT_MODIFICATION_STRIKETHROUGH) label = "STRIKE";
+        const char* label = "обычный";
+        if (p->type & VTL_TEXT_MODIFICATION_BOLD)          label = "ЖИРНЫЙ";
+        else if (p->type & VTL_TEXT_MODIFICATION_ITALIC)   label = "КУРСИВ";
+        else if (p->type & VTL_TEXT_MODIFICATION_STRIKETHROUGH) label = "ЗАЧЁРКНУТ";
 
-        printf("  [%zu] %-8s len=%2zu \"", i, label, p->length);
+        printf("  [%zu] %-10s длина=%2zu \"", i, label, p->length);
         size_t to_print = p->length > 50 ? 50 : p->length;
         for (size_t k = 0; k < to_print; ++k) {
             char c = p->text[k];
@@ -134,13 +134,13 @@ static void bench_asciidoc_scanners(size_t doc_size_kb, size_t iterations)
     size_t src_len = 0;
     char* buf = build_large_asciidoc(doc_size_kb, &src_len);
     if (!buf) {
-        printf("bench: allocation failed\n");
+        printf("bench: не удалось выделить память\n");
         return;
     }
     VTL_publication_Text src = { buf, src_len };
 
     long cpu_cores = detect_cpu_cores();
-    printf("\n=== Scanner-Level Parallelism (15 scanners, %ld CPU cores, %zu KB doc, %zu iters) ===\n",
+    printf("\n=== Параллелизм на уровне сканеров (15 сканеров, %ld ядер CPU, документ %zu KB, %zu итераций) ===\n",
            cpu_cores, doc_size_kb, iterations);
 
     double t_seq = VTL_asciidoc_BenchSequential(&src, iterations);
@@ -148,10 +148,10 @@ static void bench_asciidoc_scanners(size_t doc_size_kb, size_t iterations)
     double speedup = (t_par > 0.0) ? (t_seq / t_par) : 0.0;
     double efficiency = speedup / (double)cpu_cores;
 
-    printf("  Sequential : %.4f s\n", t_seq);
-    printf("  Parallel   : %.4f s\n", t_par);
-    printf("  Speedup    : %.3fx\n", speedup);
-    printf("  Efficiency : %.1f%%  (Sp/N where N=%ld cores)\n",
+    printf("  Последовательно : %.4f с\n", t_seq);
+    printf("  Параллельно     : %.4f с\n", t_par);
+    printf("  Ускорение       : %.3fx\n", speedup);
+    printf("  Эффективность   : %.1f%%  (Sp/N, где N=%ld ядер)\n",
            efficiency * 100.0, cpu_cores);
 
     free(buf);
@@ -180,7 +180,7 @@ static void bench_asciidoc_batch(size_t doc_size_kb, size_t files, size_t iterat
     if (!paths || !out) { free(paths); free(out); remove(path); return; }
     for (size_t i = 0; i < files; ++i) paths[i] = path;
 
-    printf("\n=== File-Batch Parallelism (%zu files x %zu KB each, %zu iters) ===\n",
+    printf("\n=== Параллелизм пакета файлов (%zu файлов по %zu KB, %zu итераций) ===\n",
            files, doc_size_kb, iterations);
 
     double t0 = vtl_monotonic_seconds();
@@ -208,10 +208,10 @@ static void bench_asciidoc_batch(size_t doc_size_kb, size_t files, size_t iterat
     double speedup = (t_par > 0.0) ? (t_seq / t_par) : 0.0;
     double efficiency = speedup / effective_n;
 
-    printf("  Sequential : %.4f s\n", t_seq);
-    printf("  Parallel   : %.4f s\n", t_par);
-    printf("  Speedup    : %.3fx\n", speedup);
-    printf("  Efficiency : %.1f%%  (Sp/N where N=%.0f effective workers)\n",
+    printf("  Последовательно : %.4f с\n", t_seq);
+    printf("  Параллельно     : %.4f с\n", t_par);
+    printf("  Ускорение       : %.3fx\n", speedup);
+    printf("  Эффективность   : %.1f%%  (Sp/N, где N=%.0f эффективных воркеров)\n",
            efficiency * 100.0, effective_n);
 
     free(out);
