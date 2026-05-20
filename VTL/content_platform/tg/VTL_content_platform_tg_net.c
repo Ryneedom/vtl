@@ -2,7 +2,7 @@
 
 #include <curl/curl.h>
 #include <parson/parson.h>
-#include <VTL/utils/curl/VTL_http_client.h>
+#include <VTL/utils/curl/VTL_utils_curl_http_client.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

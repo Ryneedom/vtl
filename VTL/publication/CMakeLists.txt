@@ -3,8 +3,8 @@ add_library(VTL_publication OBJECT
     text/VTL_publication_text_data.c
     text/VTL_publication_text_op.c
     text/VTL_publication_markup_text_flags_check.c
-    text/infra/VTL_publication_text_read.c
-    text/infra/VTL_publication_text_write.c
+    text/infra/VTL_publication_text_infra_read.c
+    text/infra/VTL_publication_text_infra_write.c
     text/bbcode/VTL_publication_text_op_bbcode.c
     text/telegram/VTL_publication_text_op_telegram.c
     text/telegram/VTL_publication_text_op_telegram_data.c
@@ -22,7 +22,7 @@ add_library(VTL_publication OBJECT
     text/asciidoc/VTL_publication_text_op_asciidoc_data.c
     text/asciidoc/VTL_publication_text_op_asciidoc_scan.c
     text/asciidoc/VTL_publication_text_op_asciidoc_convert.c
-    text/asciidoc/infra/VTL_publication_text_op_asciidoc_load.c
+    text/asciidoc/infra/VTL_publication_text_op_asciidoc_infra_load.c
     text/mediawiki/VTL_publication_text_op_mediawiki.c
     text/mediawiki/VTL_publication_text_op_mediawiki_data.c
     text/mediawiki/VTL_publication_text_op_mediawiki_scan.c

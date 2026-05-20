@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #include <VTL/user/VTL_user_data.h>
-#include <VTL/utils/db/VTL_db.h>
+#include <VTL/utils/db/VTL_utils_db.h>
 
 // Создание таблицы
 bool VTL_user_db_CreateTable(VTL_Database* db);

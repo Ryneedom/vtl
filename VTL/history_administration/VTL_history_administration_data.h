@@ -10,8 +10,8 @@ extern "C"
 #include <stdbool.h>
 #include <VTL/user/VTL_user_data.h>
 #include <VTL/VTL_content_platform_flags.h>
-#include <VTL/utils/VTL_time.h>
-#include <VTL/utils/VTL_file.h>
+#include <VTL/utils/VTL_utils_time.h>
+#include <VTL/utils/VTL_utils_file.h>
 #include <VTL/VTL_app_result.h>
 
 // Тип публикации

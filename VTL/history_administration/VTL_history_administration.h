@@ -7,8 +7,8 @@ extern "C"
 #endif
 
 #include <VTL/history_administration/VTL_history_administration_data.h>
-#include <VTL/history_administration/db/VTL_history_administration.h>
-#include <VTL/history_administration/io/VTL_history_administration_show.h>
+#include <VTL/history_administration/db/VTL_history_administration_db.h>
+#include <VTL/history_administration/io/VTL_history_administration_io_show.h>
 
 #ifdef __cplusplus
 }

@@ -8,8 +8,8 @@
 #include <VTL/VTL.h>
 #include <VTL/publication/text/asciidoc/VTL_publication_text_op_asciidoc.h>
 #include <VTL/publication/text/asciidoc/VTL_publication_text_op_asciidoc_compat.h>
-#include <VTL_auth.h>
-#include <VTL_vencode.h>
+#include <VTL/utils/auth/VTL_utils_auth.h>
+#include <VTL/media_container/encoding/VTL_media_container_encoding.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

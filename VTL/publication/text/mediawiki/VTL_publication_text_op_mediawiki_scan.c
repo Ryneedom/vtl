@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include <VTL/utils/threading/VTL_thread_compat.h>
+#include <VTL/utils/threading/VTL_utils_threading_thread_compat.h>
 
 
 #define VTL_MEDIAWIKI_SCANNER_COUNT 13

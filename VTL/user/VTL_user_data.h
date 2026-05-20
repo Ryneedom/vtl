@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#include <VTL/utils/VTL_encryptor.h>
+#include <VTL/utils/VTL_utils_encryptor.h>
 #include <stdio.h>
 #include <stdbool.h>
 

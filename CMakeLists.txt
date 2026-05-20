@@ -44,11 +44,11 @@ target_link_libraries(${AppName} PRIVATE
     VTL_content_platform
     VTL_publication
     VTL_media_container
-    VTL_vencode
+    VTL_media_container_encoding
     VTL_history_administration
     VTL_user
     VTL_utils
-    VTL_auth
+    VTL_utils_auth
     Threads::Threads
 )
 

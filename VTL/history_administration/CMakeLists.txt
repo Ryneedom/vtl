@@ -1,10 +1,10 @@
 add_library(VTL_history_administration OBJECT
     VTL_history_administration_data.c
-    db/VTL_history_administration_create.c
-    db/VTL_history_administration_read.c
-    db/VTL_history_administration_edit.c
-    db/VTL_history_administration_delete.c
-    io/VTL_history_administration_show.c
+    db/VTL_history_administration_db_create.c
+    db/VTL_history_administration_db_read.c
+    db/VTL_history_administration_db_edit.c
+    db/VTL_history_administration_db_delete.c
+    io/VTL_history_administration_io_show.c
 )
 
 target_include_directories(VTL_history_administration PUBLIC ${CMAKE_SOURCE_DIR})

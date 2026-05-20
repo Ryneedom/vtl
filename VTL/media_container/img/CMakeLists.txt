@@ -1,8 +1,8 @@
 # Создаем библиотеку для обработки изображений
 add_library(VTL_img STATIC
-    VTL_img_core.c
-    VTL_img_filters.c
-    VTL_img_utils.c
+    VTL_media_container_img_core.c
+    VTL_media_container_img_filters.c
+    VTL_media_container_img_utils.c
 )
 
 # Устанавливаем свойства библиотеки

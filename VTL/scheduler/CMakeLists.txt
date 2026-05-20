@@ -1,5 +1,5 @@
 add_library(VTL_scheduler OBJECT
-    db/VTL_scheduler_repo.c
+    db/VTL_scheduler_db_repo.c
     metadata/VTL_scheduler_metadata.c
     dispatcher/VTL_scheduler_dispatcher.c
 )

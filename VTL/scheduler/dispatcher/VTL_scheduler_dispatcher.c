@@ -7,7 +7,7 @@
 
 #include <VTL/scheduler/dispatcher/VTL_scheduler_dispatcher.h>
 #include <VTL/scheduler/metadata/VTL_scheduler_metadata.h>
-#include <VTL/utils/threading/VTL_thread_compat.h>
+#include <VTL/utils/threading/VTL_utils_threading_thread_compat.h>
 
 #include <VTL/content_platform/tg/VTL_content_platform_tg_net.h>
 #include <VTL/content_platform/reddit/VTL_content_platform_reddit_net.h>

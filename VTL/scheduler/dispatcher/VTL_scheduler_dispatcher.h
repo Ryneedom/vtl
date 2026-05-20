@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <VTL/scheduler/VTL_scheduler_data.h>
-#include <VTL/scheduler/db/VTL_scheduler_repo.h>
+#include <VTL/scheduler/db/VTL_scheduler_db_repo.h>
 #include <VTL/VTL_app_result.h>
 
 VTL_AppResult VTL_scheduler_dispatcher_Send(VTL_scheduler_Repo*       repo,
