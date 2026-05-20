@@ -58,17 +58,20 @@ target_include_directories(ffmpeg INTERFACE
 )
 
 # ============================================================
-# libcurl
+# libcurl — заглушка
 # ============================================================
-set(CURL_LIB_DIR "${EXTERNAL_LIBS_DIR}/curl/lib")
-set(CURL_INC_DIR "${EXTERNAL_LIBS_DIR}/curl/include")
-
-_vtl_ensure_soname("${CURL_LIB_DIR}" "libcurl.so.4.8.0" "libcurl.so.4")
-
-add_library(CURL::libcurl SHARED IMPORTED)
+# Бандленный external_libs/curl/lib/libcurl.so.4.8.0 имеет DT_NEEDED librtmp.so.1
+# (и, возможно, другие транзитивные .so), которых на чистой системе нет —
+# ld.so при старте бинаря падает с "librtmp.so.1: cannot open shared object".
+#
+# Делаем то же что с FFmpeg: пустой INTERFACE-таргет. Заголовки доступны для
+# компиляции, .so не подтягивается, curl_* вызовы становятся unresolved
+# (ignore-all внизу). Runtime-вызовы → SIGSEGV. Сетевые модули
+# (Telegram/Vimeo/Discord/Reddit/MediaWiki-net) временно нерабочие.
+# add_library(CURL::libcurl SHARED IMPORTED) — отключено, см. ниже
+add_library(CURL::libcurl INTERFACE IMPORTED)
 set_target_properties(CURL::libcurl PROPERTIES
-    IMPORTED_LOCATION "${CURL_LIB_DIR}/libcurl.so.4.8.0"
-    INTERFACE_INCLUDE_DIRECTORIES "${CURL_INC_DIR}"
+    INTERFACE_INCLUDE_DIRECTORIES "${EXTERNAL_LIBS_DIR}/curl/include"
 )
 
 # ============================================================
@@ -105,8 +108,7 @@ endif()
 # Используем $ORIGIN — относительный путь от бинаря.
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH
-    "\$ORIGIN/../external_libs/curl/lib"
     "\$ORIGIN/../external_libs/postgresql/lib"
 )
 
-message(STATUS "VTL dependencies: curl 4, libpq 5 (FFmpeg — заглушка, видео временно нерабочее)")
+message(STATUS "VTL dependencies: libpq 5 (FFmpeg и curl — заглушки, видео и сеть временно нерабочие)")
